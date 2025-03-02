@@ -1,4 +1,4 @@
-# To-Do App
+# To-Do App REST API
 
 A REST API for managing a to-do list, built as a learning project to demonstrate skills in Node.js, Express, MongoDB, and JWT authentication.
 
