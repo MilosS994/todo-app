@@ -1,7 +1,7 @@
 {
   "name": "todo-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "A simple REST API for managing a to-do list with Node.js and MongoDB",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -11,7 +11,13 @@
     "type": "git",
     "url": "git+https://github.com/MilosS994/todo-app.git"
   },
-  "keywords": [],
+  "keywords": [
+    "todo",
+    "rest-api",
+    "node.js",
+    "mongodb",
+    "express"
+  ],
   "author": "Milos",
   "license": "ISC",
   "bugs": {
