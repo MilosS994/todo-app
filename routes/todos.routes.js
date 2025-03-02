@@ -1,87 +1,25 @@
 const express = require("express");
 const router = express.Router();
-const Todo = require("../models/todo.model");
+const {
+  createTodo,
+  getTodos,
+  deleteTodo,
+  updateTodo,
+  getCompletedTodos,
+  getActiveTodos,
+} = require("../controllers/todos.controller");
 
 // Add new todo
-router.post("/", async (req, res) => {
-  const { title } = req.body;
-
-  if (!title) {
-    return res.status(400).send({ message: "Title is required" });
-  }
-
-  try {
-    const toDo = new Todo({ title });
-    await toDo.save();
-    res.status(201).send({ message: "Todo created succesffully", toDo });
-  } catch (error) {
-    res.status(500).send({ message: "Error creating Todo", error });
-  }
-});
-
+router.post("/", createTodo);
 // Show all todos
-router.get("/", async (req, res) => {
-  try {
-    const toDos = await Todo.find();
-    res.send(toDos);
-  } catch (error) {
-    res.status(500).send({ message: "Error fetching todos", error });
-  }
-});
-
+router.get("/", getTodos);
 // Delete todo
-router.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const toDo = await Todo.findByIdAndDelete(id);
-    if (!toDo) {
-      return res.status(404).send({ message: "Todo not found" });
-    }
-    res.send({ message: "Todo successfully deleted", toDo });
-  } catch (error) {
-    res.status(500).send({ message: "Error deleting todo", error });
-  }
-});
-
+router.delete("/:id", deleteTodo);
 // Update todo
-router.put("/:id", async (req, res) => {
-  const { id } = req.params;
-  const { title, updated } = req.body;
-
-  try {
-    const toDo = await Todo.findByIdAndUpdate(
-      id,
-      { title, updated },
-      { new: true, runValidators: true }
-    );
-    if (!toDo) {
-      res.status(404).send({ message: "Todo not found" });
-    }
-    res.send({ message: "Todo successfully updated", toDo });
-  } catch (error) {
-    res.status(500).send({ message: "Error updating todo", error });
-  }
-});
-
+router.put("/:id", updateTodo);
 // Filter completed todos
-router.get("/completed", async (req, res) => {
-  try {
-    const todos = await Todo.find({ completed: true });
-    res.send(todos);
-  } catch (error) {
-    res.status(500).send({ message: "Error fetching completed todos", error });
-  }
-});
-
+router.get("/completed", getCompletedTodos);
 // Filter active todos
-router.get("/pending", async (req, res) => {
-  try {
-    const todos = await Todo.find({ completed: false });
-    res.send(todos);
-  } catch (error) {
-    res.status(500).send({ message: "Error fetching pending todos", error });
-  }
-});
+router.get("/pending", getActiveTodos);
 
 module.exports = router;
