@@ -64,4 +64,24 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+// Filter completed todos
+router.get("/completed", async (req, res) => {
+  try {
+    const todos = await Todo.find({ completed: true });
+    res.send(todos);
+  } catch (error) {
+    res.status(500).send({ message: "Error fetching completed todos", error });
+  }
+});
+
+// Filter active todos
+router.get("/pending", async (req, res) => {
+  try {
+    const todos = await Todo.find({ completed: false });
+    res.send(todos);
+  } catch (error) {
+    res.status(500).send({ message: "Error fetching pending todos", error });
+  }
+});
+
 module.exports = router;
