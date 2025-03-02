@@ -5,18 +5,23 @@ const validator = require("validator");
 exports.createTodo = async (req, res) => {
   const { title } = req.body;
 
-  if (!title || !validator.isLength(title, { min: 3, max: 50 })) {
+  if (!title) {
+    return res.status(400).json({ error: "Title is required" });
+  }
+  if (!validator.isLength(title, { min: 3, max: 50 })) {
     return res
       .status(400)
-      .send({ message: "Title must be between 3 and 50 characters" });
+      .json({ error: "Title must be between 3 and 50 characters" });
   }
 
   try {
-    const toDo = new Todo({ title });
-    await toDo.save();
-    res.status(201).send({ message: "Todo created succesffully", toDo });
+    const todo = new Todo({ title });
+    await todo.save();
+    res.status(201).json({ message: "Todo created successfully", data: todo });
   } catch (error) {
-    res.status(500).send({ message: "Error creating Todo", error });
+    res
+      .status(500)
+      .json({ error: "Failed to create todo", details: error.message });
   }
 };
 
@@ -24,9 +29,13 @@ exports.createTodo = async (req, res) => {
 exports.getTodos = async (req, res) => {
   try {
     const toDos = await Todo.find();
-    res.send(toDos);
+    res
+      .status(200)
+      .json({ message: "Todos fetched successfully", data: todos });
   } catch (error) {
-    res.status(500).send({ message: "Error fetching todos", error });
+    res
+      .status(500)
+      .json({ error: "Failed to fetch todos", details: error.message });
   }
 };
 
@@ -37,31 +46,35 @@ exports.deleteTodo = async (req, res) => {
   try {
     const todo = await Todo.findByIdAndDelete(id);
     if (!todo) {
-      return res.status(404).send({ message: "Todo not found" });
+      return res.status(404).json({ error: "Todo not found" });
     }
-    res.send({ message: "Todo deleted", todo });
+    res.status(200).json({ message: "Todo deleted successfully", data: todo });
   } catch (error) {
-    res.status(500).send({ message: "Error deleting todo", error });
+    res
+      .status(500)
+      .json({ error: "Failed to delete todo", details: error.message });
   }
 };
 
 // Update todo
 exports.updateTodo = async (req, res) => {
   const { id } = req.params;
-  const { title, updated } = req.body;
+  const { title, completed } = req.body;
 
   try {
     const toDo = await Todo.findByIdAndUpdate(
       id,
-      { title, updated },
+      { title, completed },
       { new: true, runValidators: true }
     );
     if (!toDo) {
-      res.status(404).send({ message: "Todo not found" });
+      res.status(404).json({ error: "Todo not found" });
     }
-    res.send({ message: "Todo successfully updated", toDo });
+    res.status(200).json({ message: "Todo successfully updated", data: todo });
   } catch (error) {
-    res.status(500).send({ message: "Error updating todo", error });
+    res
+      .status(500)
+      .json({ error: "Failed to update todo", details: error.message });
   }
 };
 
@@ -69,9 +82,14 @@ exports.updateTodo = async (req, res) => {
 exports.getCompletedTodos = async (req, res) => {
   try {
     const todos = await Todo.find({ completed: true });
-    res.send(todos);
+    res
+      .status(200)
+      .json({ message: "Completed todos fetched successfully", data: todos });
   } catch (error) {
-    res.status(500).send({ message: "Error fetching completed todos", error });
+    res.status(500).json({
+      error: "Failed to fetch completed todos",
+      details: error.message,
+    });
   }
 };
 
@@ -79,8 +97,12 @@ exports.getCompletedTodos = async (req, res) => {
 exports.getActiveTodos = async (req, res) => {
   try {
     const todos = await Todo.find({ completed: false });
-    res.send(todos);
+    res
+      .status(200)
+      .json({ message: "Pending todos fetched successfully", data: todos });
   } catch (error) {
-    res.status(500).send({ message: "Error fetching pending todos", error });
+    res
+      .status(500)
+      .json({ error: "Failed to fetch pending todos", details: error.message });
   }
 };
