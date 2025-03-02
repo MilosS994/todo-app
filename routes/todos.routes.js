@@ -29,4 +29,39 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Delete todo
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const toDo = await Todo.findByIdAndDelete(id);
+    if (!toDo) {
+      return res.status(404).send({ message: "Todo not found" });
+    }
+    res.send({ message: "Todo successfully deleted", toDo });
+  } catch (error) {
+    res.status(500).send({ message: "Error deleting todo", error });
+  }
+});
+
+// Update todo
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, updated } = req.body;
+
+  try {
+    const toDo = await Todo.findByIdAndUpdate(
+      id,
+      { title, updated },
+      { new: true, runValidators: true }
+    );
+    if (!toDo) {
+      res.status(404).send({ message: "Todo not found" });
+    }
+    res.send({ message: "Todo successfully updated", toDo });
+  } catch (error) {
+    res.status(500).send({ message: "Error updating todo", error });
+  }
+});
+
 module.exports = router;
